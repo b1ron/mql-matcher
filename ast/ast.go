@@ -1,6 +1,4 @@
-package main
-
-import "fmt"
+package ast
 
 // leaf types
 const (
@@ -65,33 +63,11 @@ func (t *tree) eval() int {
 	return -1
 }
 
-func traverse(t *tree) {
-	// TODO
-}
-
-func main() {
-	// build a tree of simple nested expressions
-	t1 := &tree{
-		node: &node{
-			expr: &leaf{
-				key:   "foo",
-				value: 1,
-			},
-		},
+func isSubset(a, b *tree) bool {
+	lhs := a.eval()
+	switch {
+	case lhs == b.eval():
+		return true
 	}
-
-	t2 := &tree{
-		node: &node{
-			expr: &leaf{
-				key: "foo",
-				value: []any{
-					[]any{1, 2, 3},
-				},
-			},
-		},
-	}
-	// traverses the expression tree post-order and compares each leaf node
-	// if A is a subset of B, then A EQ B.
-	tree := &tree{left: t1.node, right: t2.node}
-	fmt.Println(tree.eval())
+	return false
 }
