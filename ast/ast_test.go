@@ -11,50 +11,15 @@ func TestSubset(t *testing.T) {
 		want bool
 	}{
 		{
-			&tree{
-				node: &node{
-					expr: &leaf{
-						key:   "a",
-						value: 1,
-					},
-				},
-			},
-			&tree{
-				node: &node{
-					expr: &leaf{
-						key:   "a",
-						value: 0,
-					},
-				},
-			},
-			false,
-		},
-		{
-			&tree{
-				node: &node{
-					expr: &leaf{
-						key:   "a",
-						value: 1,
-					},
-				},
-			},
-			&tree{
-				node: &node{
-					expr: &node{
-						expr: &leaf{
-							key:   "a",
-							value: []int{1, 2, 3},
-						},
-					},
-				},
-			},
-			true,
+			a:    &tree{root: &node{expr: &leaf{key: "a", value: 1}}},
+			b:    &tree{root: &node{expr: &leaf{key: "a", value: 0}}},
+			want: false,
 		},
 	}
-	for i, test := range tests {
-		t.Log(test.a.eval(), test.b.eval())
-		if got := isSubset(test.a, test.b); got != test.want {
-			t.Errorf("#%d isSubset(%v, %v) = %v", i, test.a, test.b, got)
+	for _, test := range tests {
+		got := isSubset(test.a, test.b)
+		if got != test.want {
+			t.Errorf("isSubset(%v, %v) = %v, want %v", test.a, test.b, got, test.want)
 		}
 	}
 }

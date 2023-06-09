@@ -10,14 +10,12 @@ const (
 )
 
 type Expr interface {
-	eval() int
+	eval() any
 }
 
 type tree struct {
-	node *node
-	// ...
-	left  *node
-	right *node
+	root *node
+	next *node // make it simple for now
 }
 
 type node struct {
@@ -30,37 +28,36 @@ type leaf struct {
 }
 
 // returns a leaf value.
-func (l *leaf) eval() int {
+func (l *leaf) eval() any {
 	switch l.value.(type) {
 	case []any:
-		// TODO iterate the slice
-		return len(l.value.([]any))
+		return l.value.([]any)
 	case int:
-		return l.value.(int)
+		return l.value
 	}
-	return -1
+	return nil
 }
 
 // evaluates a node expression
-func (n *node) eval() int {
+func (n *node) eval() any {
 	switch n.expr.(type) {
 	case *node:
 		return n.expr.eval()
 	case *leaf:
 		return n.expr.eval()
 	}
-	return -1
+	return nil
 }
 
 // evaluates an expression tree
-func (t *tree) eval() int {
-	switch t.node.expr.(type) {
+func (t *tree) eval() any {
+	switch t.root.expr.(type) {
 	case *node:
-		return t.node.expr.eval()
+		return t.root.expr.eval()
 	case *leaf:
-		return t.node.expr.eval()
+		return t.root.expr.eval()
 	}
-	return -1
+	return nil
 }
 
 func isSubset(a, b *tree) bool {
