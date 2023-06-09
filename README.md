@@ -1,4 +1,4 @@
-# mlmp
+# mql-matcher
 
 travserse an expression tree and evaluate each leaf node for simple match equalities in nested expressions.
 
