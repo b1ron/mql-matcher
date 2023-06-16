@@ -1,5 +1,9 @@
 package ast
 
+import (
+	"fmt"
+)
+
 // leaf types
 const (
 	EQ = iota
@@ -11,6 +15,10 @@ const (
 
 type Expr interface {
 	eval() any
+}
+
+func foo() {
+	fmt.Print()
 }
 
 type tree struct {
@@ -63,21 +71,22 @@ func (t *tree) eval() any {
 func isSubset(a, b *tree) bool {
 	lhs := a.eval()
 	switch lhs.(type) {
-	case int:
+	case int, any:
 		switch b.eval().(type) {
+		case []any:
+			return contains(b.eval().([]any), lhs)
 		case int:
 			return lhs.(int) == b.eval().(int)
-		case []any:
-			return contains(b.eval().([]any), lhs.(int))
 		}
 	}
 	return false
 }
 
-type number interface {
-	int | float64 | float32 | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64
-}
-
-func contains[K comparable, V number]([]any, any) bool {
+func contains[E comparable](s []E, v E) bool {
+	for _, sv := range s {
+		if sv == v {
+			return true
+		}
+	}
 	return false
 }
