@@ -37,6 +37,10 @@ func (l *leaf) eval() any {
 	return nil
 }
 
+func (l *leaf) field() string {
+	return l.key.(string)
+}
+
 // evaluates a node expression
 func (n *node) eval() any {
 	switch n.expr.(type) {
@@ -60,6 +64,11 @@ func (t *tree) eval() any {
 }
 
 func isSubset(a, b *tree) bool {
+	// fail fast if keys don't match
+	if a.root.expr.(*leaf).field() != b.root.expr.(*leaf).field() {
+		return false
+	}
+
 	lhs := a.eval()
 	switch lhs.(type) {
 	case int, any:
