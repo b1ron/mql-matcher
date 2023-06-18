@@ -42,6 +42,27 @@ func TestSubset(t *testing.T) {
 			b:    &tree{root: &node{key: "a", expr: nil}},
 			want: false,
 		},
+		{
+			a:    &tree{root: &node{expr: &leaf{key: "a", value: "1"}}},
+			b:    &tree{root: &node{expr: &leaf{key: "a", value: "1"}}},
+			want: false,
+		},
+		// strict array comparison
+		{
+			a:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1}}}},
+			b:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1, 2}}}},
+			want: false,
+		},
+		{
+			a:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1, 2}}}},
+			b:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1, 2}}}},
+			want: true,
+		},
+		{
+			a:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1, 2}}}},
+			b:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1, 2, 3}}}},
+			want: false,
+		},
 	}
 	for _, test := range tests {
 		got := isSubset(test.a, test.b)

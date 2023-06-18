@@ -1,5 +1,9 @@
 package ast
 
+import (
+	"reflect"
+)
+
 // leaf types
 const (
 	EQ = iota
@@ -77,14 +81,36 @@ func isSubset(a, b *tree) bool {
 		return false
 	}
 
+	// this switch statement is fragile
+	// it uses precedence rules to determine the order of evaluation
 	lhs := a.eval()
 	switch lhs.(type) {
-	case int, any:
+	case int:
 		switch b.eval().(type) {
-		case []any:
-			return contains(b.eval().([]any), lhs)
 		case int:
 			return lhs.(int) == b.eval().(int)
+		case string:
+			return false
+		case []any:
+			return contains(b.eval().([]any), lhs)
+		}
+	case string:
+		switch b.eval().(type) {
+		case int:
+			return false
+		case string:
+			return lhs.(string) == b.eval().(string)
+		case []any:
+			return contains(b.eval().([]any), lhs)
+		}
+	case []any:
+		switch b.eval().(type) {
+		case int:
+			return false
+		case string:
+			return false
+		case []any:
+			return containsAll(lhs.([]any), b.eval().([]any))
 		}
 	}
 	return false
@@ -97,4 +123,12 @@ func contains[E comparable](s []E, v E) bool {
 		}
 	}
 	return false
+}
+
+func containsAll[E comparable](s1, s2 []E) bool {
+	if len(s1) != len(s2) {
+		return false
+	}
+
+	return reflect.DeepEqual(s1, s2)
 }
