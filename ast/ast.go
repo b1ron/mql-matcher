@@ -22,7 +22,7 @@ type tree struct {
 }
 
 type node struct {
-	key  string // can also have a key which could be an operator or a field name
+	key  string // can also have a key which could be an operator or ident
 	expr Expr
 }
 
