@@ -1,9 +1,5 @@
 package ast
 
-import (
-	"fmt"
-)
-
 // leaf types
 const (
 	EQ = iota
@@ -17,13 +13,8 @@ type Expr interface {
 	eval() any
 }
 
-func foo() {
-	fmt.Print()
-}
-
 type tree struct {
 	root *node
-	next *node // make it simple for now
 }
 
 type node struct {
