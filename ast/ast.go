@@ -18,6 +18,7 @@ type tree struct {
 }
 
 type node struct {
+	key  string // can also have a key which could be an operator or a field name
 	expr Expr
 }
 
@@ -63,8 +64,15 @@ func (t *tree) eval() any {
 	return nil
 }
 
+func (t *tree) isNil() bool {
+	return t.root == nil || t.root.expr == nil
+}
+
 func isSubset(a, b *tree) bool {
-	// fail fast if keys don't match
+	if a.isNil() || b.isNil() {
+		return false
+	}
+
 	if a.root.expr.(*leaf).field() != b.root.expr.(*leaf).field() {
 		return false
 	}
