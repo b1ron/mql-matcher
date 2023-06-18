@@ -43,9 +43,14 @@ func TestSubset(t *testing.T) {
 			want: false,
 		},
 		{
-			a:    &tree{root: &node{expr: &leaf{key: "a", value: "1"}}},
-			b:    &tree{root: &node{expr: &leaf{key: "a", value: "1"}}},
+			a:    &tree{root: &node{expr: &leaf{key: "a", value: "x"}}},
+			b:    &tree{root: &node{expr: &leaf{key: "a", value: "x"}}},
 			want: true,
+		},
+		{
+			a:    &tree{root: &node{expr: &leaf{key: "a", value: "x"}}},
+			b:    &tree{root: &node{expr: &leaf{key: "a", value: "z"}}},
+			want: false,
 		},
 		// strict array comparison
 		{
@@ -60,7 +65,7 @@ func TestSubset(t *testing.T) {
 		},
 		{
 			a:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1, 2}}}},
-			b:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1, 2, 3}}}},
+			b:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1}}}},
 			want: false,
 		},
 	}

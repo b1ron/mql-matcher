@@ -34,10 +34,13 @@ type leaf struct {
 // returns a leaf value.
 func (l *leaf) eval() any {
 	switch l.value.(type) {
+	// needs the same precedence as the switch statement in isSubset
+	case int:
+		return l.value.(int)
+	case string:
+		return l.value.(string)
 	case []any:
 		return l.value.([]any)
-	case int:
-		return l.value
 	}
 	return nil
 }
