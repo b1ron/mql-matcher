@@ -126,9 +126,5 @@ func contains[E comparable](s []E, v E) bool {
 }
 
 func containsAll[E comparable](s1, s2 []E) bool {
-	if len(s1) != len(s2) {
-		return false
-	}
-
 	return reflect.DeepEqual(s1, s2)
 }
