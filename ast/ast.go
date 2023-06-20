@@ -110,7 +110,7 @@ func (t *tree) depth() int {
 
 	s := stack{}
 	s.push(l.value)
-	i := 1
+	i := 0
 	for !s.empty() {
 		item := s.pop()
 		switch item := item.(type) {
@@ -122,18 +122,11 @@ func (t *tree) depth() int {
 		}
 	}
 
-	if i > 1 {
-		return i - 1
-	}
 	return i
 }
 
-func (t *tree) validDepth() bool {
-	if t.depth() > maxDepth {
-		return false
-	}
-
-	return true
+func (t *tree) isValid() bool {
+	return t.depth() <= maxDepth
 }
 
 func isSubset(a, b *tree) bool {
@@ -141,7 +134,7 @@ func isSubset(a, b *tree) bool {
 		return false
 	}
 
-	if !a.validDepth() || !b.validDepth() {
+	if !a.isValid() || !b.isValid() {
 		return false
 	}
 
