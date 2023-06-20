@@ -68,6 +68,18 @@ func TestSubset(t *testing.T) {
 			b:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1}}}},
 			want: false,
 		},
+		// deeply nested array that exceeds max depth
+		{
+			a:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1}}}},
+			b:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1, []any{2, []any{3, nil}}}}}},
+			want: false,
+		},
+		// FIXME: this should be true, elements should be compared at least two levels deep.
+		{
+			a:    &tree{root: &node{expr: &leaf{key: "a", value: 3}}},
+			b:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1, []any{2, 3}}}}},
+			want: true,
+		},
 	}
 	for _, test := range tests {
 		got := isSubset(test.a, test.b)

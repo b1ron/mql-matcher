@@ -13,6 +13,9 @@ const (
 	GTE
 )
 
+// upper bound on recursive queries
+const maxDepth = 3
+
 type Expr interface {
 	eval() any
 }
@@ -75,8 +78,70 @@ func (t *tree) isNil() bool {
 	return t.root == nil || t.root.expr == nil
 }
 
+type stack struct {
+	frames   []any
+	i        int
+	children int
+}
+
+func (s *stack) push(v any) {
+	s.frames = append(s.frames, v)
+	s.i++
+	s.children = s.i
+}
+
+func (s *stack) pop() any {
+	v := s.frames[s.i-1]
+	s.i--
+	s.frames = s.frames[:s.i]
+	return v
+}
+
+func (s *stack) size() int {
+	return s.children
+}
+
+func (s *stack) empty() bool {
+	return s.frames == nil || len(s.frames) == 0
+}
+
+func (t *tree) depth() int {
+	l := t.root.expr.(*leaf)
+
+	s := stack{}
+	s.push(l.value)
+	i := 1
+	for !s.empty() {
+		item := s.pop()
+		switch item := item.(type) {
+		case []any:
+			i++
+			for _, v := range item {
+				s.push(v)
+			}
+		}
+	}
+
+	if i > 1 {
+		return i - 1
+	}
+	return i
+}
+
+func (t *tree) validDepth() bool {
+	if t.depth() > maxDepth {
+		return false
+	}
+
+	return true
+}
+
 func isSubset(a, b *tree) bool {
 	if a.isNil() || b.isNil() {
+		return false
+	}
+
+	if !a.validDepth() || !b.validDepth() {
 		return false
 	}
 
