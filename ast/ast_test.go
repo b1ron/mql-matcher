@@ -71,10 +71,10 @@ func TestSubset(t *testing.T) {
 		// deeply nested array that exceeds max depth
 		{
 			a:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1}}}},
-			b:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1, []any{2, []any{3, nil}}}}}},
+			b:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1, []any{2, []any{3, []any{4, nil}}}}}}},
 			want: false,
 		},
-		// FIXME: this should be true, elements should be compared at this depth
+		// FIXME: this should be true, elements should be compared at the second-level
 		{
 			a:    &tree{root: &node{expr: &leaf{key: "a", value: 3}}},
 			b:    &tree{root: &node{expr: &leaf{key: "a", value: []any{1, []any{2, 3}}}}},

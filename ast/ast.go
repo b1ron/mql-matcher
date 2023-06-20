@@ -13,8 +13,8 @@ const (
 	GTE
 )
 
-// upper bound on recursive queries
-const maxDepth = 3
+// restrict nesting to 2 levels for trivial cases for now
+const maxDepth = 2
 
 type Expr interface {
 	eval() any
