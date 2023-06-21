@@ -105,6 +105,49 @@ func (s *stack) empty() bool {
 	return s.frames == nil || len(s.frames) == 0
 }
 
+func (t *tree) contains(v any) bool {
+	l := t.root.expr.(*leaf)
+
+	s := stack{}
+	s.push(l.value)
+
+	depth := 0
+
+	for !s.empty() {
+		item := s.pop()
+		switch item := item.(type) {
+		case []any:
+			depth++
+			if depth > maxNesting {
+				return false
+			}
+
+			if contains(v, item) {
+				return true
+			}
+
+			for _, v := range item {
+				s.push(v)
+			}
+		}
+	}
+
+	return false
+}
+
+func contains[E comparable](v E, s []E) bool {
+	for _, sv := range s {
+		if sv == v {
+			return true
+		}
+	}
+	return false
+}
+
+func containsAll[E comparable](s1, s2 []E) bool {
+	return reflect.DeepEqual(s1, s2)
+}
+
 func isSubset(a, b *tree) bool {
 	if a.isNil() || b.isNil() {
 		return false
@@ -147,47 +190,4 @@ func isSubset(a, b *tree) bool {
 		}
 	}
 	return false
-}
-
-func (t *tree) contains(v any) bool {
-	l := t.root.expr.(*leaf)
-
-	s := stack{}
-	s.push(l.value)
-
-	depth := 0
-
-	for !s.empty() {
-		item := s.pop()
-		switch item := item.(type) {
-		case []any:
-			depth++
-			if depth > maxNesting {
-				return false
-			}
-
-			if contains(v, item) {
-				return true
-			}
-
-			for _, v := range item {
-				s.push(v)
-			}
-		}
-	}
-
-	return false
-}
-
-func contains[E comparable](v E, s []E) bool {
-	for _, sv := range s {
-		if sv == v {
-			return true
-		}
-	}
-	return false
-}
-
-func containsAll[E comparable](s1, s2 []E) bool {
-	return reflect.DeepEqual(s1, s2)
 }
