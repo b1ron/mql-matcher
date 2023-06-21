@@ -13,8 +13,8 @@ const (
 	GTE
 )
 
-// restrict nesting to 2 levels for trivial cases for now
-const maxDepth = 2
+// restrict nesting level to 10
+const maxNesting = 10
 
 type Expr interface {
 	eval() any
@@ -91,8 +91,8 @@ func (s *stack) push(v any) {
 }
 
 func (s *stack) pop() any {
-	v := s.frames[s.i-1]
 	s.i--
+	v := s.frames[s.i]
 	s.frames = s.frames[:s.i]
 	return v
 }
@@ -103,27 +103,6 @@ func (s *stack) size() int {
 
 func (s *stack) empty() bool {
 	return s.frames == nil || len(s.frames) == 0
-}
-
-func (t *tree) depth() int {
-	l := t.root.expr.(*leaf)
-
-	s := stack{}
-	s.push(l.value)
-
-	level := 0
-	for !s.empty() {
-		item := s.pop()
-		switch item := item.(type) {
-		case []any:
-			level++
-			for _, v := range item {
-				s.push(v)
-			}
-		}
-	}
-
-	return level
 }
 
 func isSubset(a, b *tree) bool {
@@ -146,7 +125,7 @@ func isSubset(a, b *tree) bool {
 		case string:
 			return false
 		case []any:
-			return contains(lhs, b.eval().([]any))
+			return b.contains(lhs)
 		}
 	case string:
 		switch b.eval().(type) {
@@ -155,7 +134,7 @@ func isSubset(a, b *tree) bool {
 		case string:
 			return lhs.(string) == b.eval().(string)
 		case []any:
-			return contains(lhs, b.eval().([]any))
+			return b.contains(lhs)
 		}
 	case []any:
 		switch b.eval().(type) {
@@ -167,6 +146,36 @@ func isSubset(a, b *tree) bool {
 			return containsAll(lhs.([]any), b.eval().([]any))
 		}
 	}
+	return false
+}
+
+func (t *tree) contains(v any) bool {
+	l := t.root.expr.(*leaf)
+
+	s := stack{}
+	s.push(l.value)
+
+	depth := 0
+
+	for !s.empty() {
+		item := s.pop()
+		switch item := item.(type) {
+		case []any:
+			depth++
+			if depth > maxNesting {
+				return false
+			}
+
+			if contains(v, item) {
+				return true
+			}
+
+			for _, v := range item {
+				s.push(v)
+			}
+		}
+	}
+
 	return false
 }
 
