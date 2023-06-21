@@ -110,31 +110,24 @@ func (t *tree) depth() int {
 
 	s := stack{}
 	s.push(l.value)
-	i := 0
+
+	level := 0
 	for !s.empty() {
 		item := s.pop()
 		switch item := item.(type) {
 		case []any:
-			i++
+			level++
 			for _, v := range item {
 				s.push(v)
 			}
 		}
 	}
 
-	return i
-}
-
-func (t *tree) isValid() bool {
-	return t.depth() <= maxDepth
+	return level
 }
 
 func isSubset(a, b *tree) bool {
 	if a.isNil() || b.isNil() {
-		return false
-	}
-
-	if !a.isValid() || !b.isValid() {
 		return false
 	}
 
@@ -153,7 +146,7 @@ func isSubset(a, b *tree) bool {
 		case string:
 			return false
 		case []any:
-			return contains(b.eval().([]any), lhs)
+			return contains(lhs, b.eval().([]any))
 		}
 	case string:
 		switch b.eval().(type) {
@@ -162,7 +155,7 @@ func isSubset(a, b *tree) bool {
 		case string:
 			return lhs.(string) == b.eval().(string)
 		case []any:
-			return contains(b.eval().([]any), lhs)
+			return contains(lhs, b.eval().([]any))
 		}
 	case []any:
 		switch b.eval().(type) {
@@ -177,7 +170,7 @@ func isSubset(a, b *tree) bool {
 	return false
 }
 
-func contains[E comparable](s []E, v E) bool {
+func contains[E comparable](v E, s []E) bool {
 	for _, sv := range s {
 		if sv == v {
 			return true
