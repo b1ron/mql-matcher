@@ -15,23 +15,22 @@ func TestEval(t *testing.T) {
 			e: &expr{
 				id: idents["expression-clause"].(ident),
 				e: []Expr{
-					&leaf{
-						id: idents["leaf-clause"].(ident),
-						value: value{
-							id:      idents["leaf-value"].(ident),
-							literal: "hello",
+					&expr{
+						// id: idents["leaf-clause"].(ident),
+						e: []Expr{
+							&leaf{
+								// id: idents["leaf-value"].(ident),
+								key: "a",
+								value: value{
+									literal: 1,
+								},
+							},
 						},
 					},
-					&leaf{
-						id: idents["leaf-clause"].(ident),
-						value: value{
-							id:      idents["leaf-value"].(ident),
-							literal: "world",
-						},
-					},
+					&expr{},
 				},
 			},
-			want: "helloworld",
+			want: 1,
 		},
 	}
 	for _, tt := range tests {
