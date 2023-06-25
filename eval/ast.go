@@ -9,15 +9,13 @@ package eval
 
 // leaf types
 const (
-	EQ = iota
-	LTE
-	LT
+	LT = iota + 1*-1
+	EQ
 	GT
-	GTE
 )
 
 type Expr interface {
-	eval() any
+	Eval() any
 }
 
 type ident map[string]any
@@ -28,7 +26,7 @@ var idents = ident{
 	"expression-clause":      expr{},
 	"where-clause":           nil,
 	"text-clause":            nil,
-	"leaf-value":             nil,
+	"leaf-value":             value{},
 }
 
 type expr struct {
@@ -40,10 +38,11 @@ type expr struct {
 type leaf struct {
 	id    ident
 	key   string
-	value any
+	value value
 }
 
 type value struct {
-	id ident
-	e  Expr
+	id      ident
+	e       Expr
+	literal any // the literal value
 }
